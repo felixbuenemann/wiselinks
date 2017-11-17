@@ -221,14 +221,15 @@
 
   Page = (function() {
     function Page($target, options) {
-      var self;
+      var selector, self;
       this.$target = $target;
       this.options = options;
       self = this;
       this.template_id = new Date().getTime();
       this.request_manager = new _Wiselinks.RequestManager(this.options);
+      selector = this.$target;
       this.$target = self._wrap(this.$target);
-      self._try_target(this.$target);
+      self._try_target(this.$target, selector);
       if (History.emulated.pushState && this.options.html4 === true) {
         if (window.location.href.indexOf('#.') === -1 && this.options.html4_normalize_path === true && window.location.pathname !== this.options.html4_root_path) {
           window.location.href = "" + window.location.protocol + "//" + window.location.host + this.options.html4_root_path + "#." + window.location.pathname;
@@ -269,7 +270,7 @@
       if (render !== 'partial') {
         this.template_id = new Date().getTime();
       }
-      selector = target != null ? ($target = this._wrap(target), this._try_target($target), $target.selector) : void 0;
+      selector = target != null ? ($target = this._wrap(target), this._try_target($target, target), $target.selector || target) : void 0;
       return History.pushState({
         timestamp: new Date().getTime(),
         template_id: this.template_id,
@@ -321,9 +322,9 @@
       return state;
     };
 
-    Page.prototype._try_target = function($target) {
+    Page.prototype._try_target = function($target, selector) {
       if ($target.length === 0 && this.options.target_missing === 'exception') {
-        throw new Error("[Wiselinks] Target missing: `" + $target.selector + "`");
+        throw new Error("[Wiselinks] Target missing: `" + ($target.selector || selector) + "`");
       }
     };
 
