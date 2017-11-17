@@ -1,8 +1,10 @@
 module Wiselinks
   module Request
     def self.included(base)
-      base.alias_method_chain :referer, :wiselinks
-      base.alias_method_chain :referrer, :wiselinks
+      base.send :alias_method, :referer_without_wiselinks, :referer
+      base.send :alias_method, :referer, :referer_with_wiselinks
+      base.send :alias_method, :referrer_without_wiselinks, :referrer
+      base.send :alias_method, :referrer, :referrer_with_wiselinks
     end
 
     def referer_with_wiselinks

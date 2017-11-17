@@ -2,10 +2,9 @@ module Wiselinks
   module Rendering
 
     def self.included(base)
-      base.alias_method_chain :render, :wiselinks
+      base.send :alias_method, :render_without_wiselinks, :render
+      base.send :alias_method, :render, :render_with_wiselinks
     end
-
-  protected
 
     def render_with_wiselinks(*args, &block)
       options = _normalize_args(*args)
