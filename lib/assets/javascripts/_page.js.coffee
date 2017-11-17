@@ -7,9 +7,10 @@ class Page
     @template_id = new Date().getTime()
     @request_manager = new _Wiselinks.RequestManager(@options)
 
+    selector = @$target
     @$target = self._wrap(@$target)
 
-    self._try_target(@$target)
+    self._try_target(@$target, selector)
 
     if History.emulated.pushState && @options.html4 == true
       if window.location.href.indexOf('#.') == -1 &&
@@ -55,8 +56,8 @@ class Page
 
     selector = if target?
       $target = this._wrap(target)
-      this._try_target($target)
-      $target.selector
+      this._try_target($target, target)
+      $target.selector || target
 
     History.pushState({
       timestamp: (new Date().getTime()),
@@ -96,9 +97,9 @@ class Page
     state.data.render = 'template'
     state
 
-  _try_target: ($target) ->
+  _try_target: ($target, selector) ->
     if $target.length == 0  && @options.target_missing == 'exception'
-      throw new Error("[Wiselinks] Target missing: `#{$target.selector}`")
+      throw new Error("[Wiselinks] Target missing: `#{$target.selector || selector}`")
 
   _wrap: (object) ->
     $(object)
