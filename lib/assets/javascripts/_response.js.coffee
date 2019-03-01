@@ -81,10 +81,32 @@ class Response
       @xhr.getResponseHeader('X-Wiselinks-LinkRelNext')
 
   _extract_content: ->
+    if @_get_csp_nonce()
+      @_get_content_node().find('script').attr('nonce', @_get_csp_nonce()).end().html()
+    else
+      @_get_content_html()
+
+  _get_content_node: ->
+    if @_is_full_document_response()
+      @_get_doc_target_node()
+    else
+      $doc = $(@_get_doc()).find('body')
+      # partial content might end up
+      # in head instead of body, eg.
+      # if there's only a script tag
+      if $doc.is(':empty')
+        $doc.end().find('head')
+      else
+        $doc
+
+  _get_content_html: ->
     if @_is_full_document_response()
       @_get_doc_target_node().html()
     else
       @html
+
+  _get_csp_nonce: ->
+    @_csp_nonce ?= $('meta[name=csp-nonce]').attr('content')
 
   _is_full_document_response: ->
     @_get_doc_target_node().length is 1
