@@ -38,4 +38,5 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'closure-compiler'
   gem.add_development_dependency 'coffeelint'
+  gem.add_development_dependency 'coffee-script'
 end

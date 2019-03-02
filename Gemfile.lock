@@ -172,6 +172,7 @@ DEPENDENCIES
   capybara
   closure-compiler
   coffee-rails
+  coffee-script
   coffeelint
   coveralls
   factory_girl
