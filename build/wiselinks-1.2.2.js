@@ -589,11 +589,37 @@
     };
 
     Response.prototype._extract_content = function() {
+      if (this._get_csp_nonce()) {
+        return this._get_content_node().find('script').attr('nonce', this._get_csp_nonce()).end().html();
+      } else {
+        return this._get_content_html();
+      }
+    };
+
+    Response.prototype._get_content_node = function() {
+      var $doc;
+      if (this._is_full_document_response()) {
+        return this._get_doc_target_node();
+      } else {
+        $doc = $(this._get_doc()).find('body');
+        if ($doc.is(':empty')) {
+          return $doc.end().find('head');
+        } else {
+          return $doc;
+        }
+      }
+    };
+
+    Response.prototype._get_content_html = function() {
       if (this._is_full_document_response()) {
         return this._get_doc_target_node().html();
       } else {
         return this.html;
       }
+    };
+
+    Response.prototype._get_csp_nonce = function() {
+      return this._csp_nonce != null ? this._csp_nonce : this._csp_nonce = $('meta[name=csp-nonce]').attr('content');
     };
 
     Response.prototype._is_full_document_response = function() {
