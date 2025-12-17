@@ -120,17 +120,6 @@ $(document).ready ->
     window.wiselinks = new Wiselinks()
 ```
 
-You can disable HTML4 browsers support easily:
-
-```coffeescript
-#= require jquery
-#= require wiselinks
-
-$(document).ready ->
-    window.wiselinks = new Wiselinks($('body'), html4: false )
-```
-
-
 Or you can add some more options, if you want:
 
 ```coffeescript

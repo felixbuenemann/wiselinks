@@ -15,7 +15,7 @@ class Wiselinks
       @page = new _Wiselinks.Page($target, @options)
 
   enabled: ->
-    !History.emulated.pushState || @options.html4 == true
+    true
 
   load: (url, target, render = 'template') ->
     @page.load(url, target, render)
@@ -25,9 +25,6 @@ class Wiselinks
 
   _defaults: ->
     disable_suid: true
-    html4: true
-    html4_root_path: '/'
-    html4_normalize_path: true
     target_missing: null
     assets_digest: $("meta[name='assets-digest']").attr("content")
 
