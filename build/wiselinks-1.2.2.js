@@ -227,11 +227,12 @@
       self = this;
       this.template_id = new Date().getTime();
       this.request_manager = new _Wiselinks.RequestManager(this.options);
+      this._lastUrl = this._urlWithoutHash(window.location.href);
       selector = this.$target;
       this.$target = self._wrap(this.$target);
       self._try_target(this.$target, selector);
       $(window).on('popstate', function(event) {
-        return self._onStateChange();
+        return self._handlePopState();
       });
       $(document).on('click', 'a[data-push], a[data-replace]', function(event) {
         var link;
@@ -280,14 +281,30 @@
       return this._onStateChange();
     };
 
+    Page.prototype._handlePopState = function() {
+      var currentUrl;
+      currentUrl = this._urlWithoutHash(window.location.href);
+      if (currentUrl !== this._lastUrl) {
+        return this._onStateChange();
+      }
+    };
+
     Page.prototype._onStateChange = function() {
       var state;
       state = this._getState();
+      this._lastUrl = this._urlWithoutHash(state.url);
+      if (state.data.title != null) {
+        document.title = state.data.title;
+      }
       if (this._template_id_changed(state)) {
         return this._call(this._reset_state(state));
       } else {
         return this._call(state);
       }
+    };
+
+    Page.prototype._urlWithoutHash = function(url) {
+      return url.replace(/#.*$/, '');
     };
 
     Page.prototype._getState = function() {
