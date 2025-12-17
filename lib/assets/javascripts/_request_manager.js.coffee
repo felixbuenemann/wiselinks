@@ -42,6 +42,15 @@ class RequestManager
     url = url.replace /\/+$/, ''
     url
 
+  _urlWithoutHash: (url) ->
+    return unless url?
+    url.replace /#.*$/, ''
+
+  _getHash: (url) ->
+    return '' unless url?
+    match = url.match /#.*$/
+    if match then match[0] else ''
+
   _assets_changed: (assets_digest) ->
     @options.assets_digest? && @options.assets_digest != assets_digest
 
@@ -74,8 +83,21 @@ class RequestManager
       window.location.reload(true)
     else
       state = { url: window.location.href, data: history.state || {} }
-      if url? && (url != @_normalize(state.url))
-        @_redirect_to(url, $target, state, xhr)
+
+      if url?
+        responseHasHash = @_getHash(url) != ''
+
+        if responseHasHash
+          # Server specified a hash - compare full URLs
+          isRedirect = @_normalize(url) != @_normalize(state.url)
+          redirectUrl = url
+        else
+          # Server didn't specify hash - compare without hash, preserve current hash
+          isRedirect = @_urlWithoutHash(@_normalize(url)) != @_urlWithoutHash(@_normalize(state.url))
+          redirectUrl = url + @_getHash(state.url)
+
+        if isRedirect
+          @_redirect_to(redirectUrl, $target, state, xhr)
 
       $target.html(response.content()).promise().done(
         =>
