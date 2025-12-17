@@ -6,6 +6,7 @@ class Page
 
     @template_id = new Date().getTime()
     @request_manager = new _Wiselinks.RequestManager(@options)
+    @_lastUrl = this._urlWithoutHash(window.location.href)
 
     selector = @$target
     @$target = self._wrap(@$target)
@@ -14,7 +15,7 @@ class Page
 
     # Handle browser back/forward navigation
     $(window).on 'popstate', (event) ->
-      self._onStateChange()
+      self._handlePopState()
 
     $(document).on(
       'click', 'a[data-push], a[data-replace]'
@@ -64,13 +65,30 @@ class Page
 
     this._onStateChange()
 
+  _handlePopState: ->
+    currentUrl = this._urlWithoutHash(window.location.href)
+
+    # Only trigger if URL (without hash) changed
+    if currentUrl != @_lastUrl
+      this._onStateChange()
+
   _onStateChange: ->
     state = this._getState()
+
+    # Update last URL
+    @_lastUrl = this._urlWithoutHash(state.url)
+
+    # Update page title if provided in state
+    if state.data.title?
+      document.title = state.data.title
 
     if this._template_id_changed(state)
       this._call(this._reset_state(state))
     else
       this._call(state)
+
+  _urlWithoutHash: (url) ->
+    url.replace(/#.*$/, '')
 
   _getState: ->
     {
