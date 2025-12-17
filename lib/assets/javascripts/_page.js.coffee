@@ -12,17 +12,9 @@ class Page
 
     self._try_target(@$target, selector)
 
-    History.Adapter.bind(
-      window,
-      "statechange"
-      (event, data) ->
-        state = History.getState()
-
-        if self._template_id_changed(state)
-          self._call(self._reset_state(state))
-        else
-          self._call(state)
-    )
+    # Handle browser back/forward navigation
+    $(window).on 'popstate', (event) ->
+      self._onStateChange()
 
     $(document).on(
       'click', 'a[data-push], a[data-replace]'
@@ -52,7 +44,7 @@ class Page
       this._try_target($target, target)
       $target.selector || target
 
-    History.pushState({
+    history.pushState({
       timestamp: (new Date().getTime()),
       template_id: @template_id,
       render: render,
@@ -60,13 +52,31 @@ class Page
       referer: window.location.href
     }, document.title, url )
 
+    this._onStateChange()
+
   reload: () ->
-    History.replaceState({
+    history.replaceState({
       timestamp: (new Date().getTime()),
       template_id: @template_id,
       render: 'template',
       referer: window.location.href
-    }, document.title, History.getState().url )
+    }, document.title, window.location.href )
+
+    this._onStateChange()
+
+  _onStateChange: ->
+    state = this._getState()
+
+    if this._template_id_changed(state)
+      this._call(this._reset_state(state))
+    else
+      this._call(state)
+
+  _getState: ->
+    {
+      url: window.location.href,
+      data: history.state || {}
+    }
 
   _call: (state) ->
     $target = if state.data.target? then $(state.data.target) else @$target

@@ -52,7 +52,7 @@ class RequestManager
 
     @redirected = true
     $(document).trigger('page:redirected', [$target, state.data.render, url])
-    History.replaceState(state.data, document.title, url)
+    history.replaceState(state.data, document.title, url)
 
   _loading: ($target, state) ->
     $(document).trigger('page:loading'
@@ -73,7 +73,7 @@ class RequestManager
     if @_assets_changed(assets_digest)
       window.location.reload(true)
     else
-      state = History.getState()
+      state = { url: window.location.href, data: history.state || {} }
       if url? && (url != @_normalize(state.url))
         @_redirect_to(url, $target, state, xhr)
 
