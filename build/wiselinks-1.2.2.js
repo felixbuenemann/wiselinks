@@ -404,6 +404,26 @@
       return url;
     };
 
+    RequestManager.prototype._urlWithoutHash = function(url) {
+      if (url == null) {
+        return;
+      }
+      return url.replace(/#.*$/, '');
+    };
+
+    RequestManager.prototype._getHash = function(url) {
+      var match;
+      if (url == null) {
+        return '';
+      }
+      match = url.match(/#.*$/);
+      if (match) {
+        return match[0];
+      } else {
+        return '';
+      }
+    };
+
     RequestManager.prototype._assets_changed = function(assets_digest) {
       return (this.options.assets_digest != null) && this.options.assets_digest !== assets_digest;
     };
@@ -427,7 +447,7 @@
     };
 
     RequestManager.prototype._html_loaded = function($target, data, status, xhr) {
-      var assets_digest, response, state, url;
+      var assets_digest, isRedirect, redirectUrl, response, responseHasHash, state, url;
       response = new window._Wiselinks.Response(data, xhr, $target);
       url = this._normalize(response.url());
       assets_digest = response.assets_digest();
@@ -438,8 +458,18 @@
           url: window.location.href,
           data: history.state || {}
         };
-        if ((url != null) && (url !== this._normalize(state.url))) {
-          this._redirect_to(url, $target, state, xhr);
+        if (url != null) {
+          responseHasHash = this._getHash(url) !== '';
+          if (responseHasHash) {
+            isRedirect = this._normalize(url) !== this._normalize(state.url);
+            redirectUrl = url;
+          } else {
+            isRedirect = this._urlWithoutHash(this._normalize(url)) !== this._urlWithoutHash(this._normalize(state.url));
+            redirectUrl = url + this._getHash(state.url);
+          }
+          if (isRedirect) {
+            this._redirect_to(redirectUrl, $target, state, xhr);
+          }
         }
         return $target.html(response.content()).promise().done((function(_this) {
           return function() {
