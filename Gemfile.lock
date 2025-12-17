@@ -81,13 +81,15 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.25.1)
     mini_mime (0.1.4)
-    mini_portile2 (2.3.0)
+    mini_portile2 (2.8.9)
     multi_json (1.12.2)
-    nokogiri (1.8.1)
-      mini_portile2 (~> 2.3.0)
+    nokogiri (1.15.7)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     polyglot (0.3.5)
     power_assert (0.4.1)
     public_suffix (3.0.0)
+    racc (1.8.1)
     rack (1.4.7)
     rack-cache (1.7.1)
       rack (>= 0.4)
@@ -189,4 +191,4 @@ DEPENDENCIES
   wiselinks!
 
 BUNDLED WITH
-   1.15.4
+   1.17.3
