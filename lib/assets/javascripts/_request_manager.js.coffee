@@ -108,6 +108,7 @@ class RequestManager
           @_link_rel_prev(response.link_rel_prev())
           @_link_rel_next(response.link_rel_next())
           @_done($target, status, state, response.content())
+          @redirected = null
       )
 
   _fail: ($target, status, state, error, code, data) ->
