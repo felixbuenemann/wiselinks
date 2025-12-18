@@ -479,7 +479,8 @@
             _this._robots(response.robots());
             _this._link_rel_prev(response.link_rel_prev());
             _this._link_rel_next(response.link_rel_next());
-            return _this._done($target, status, state, response.content());
+            _this._done($target, status, state, response.content());
+            return _this.redirected = null;
           };
         })(this));
       }
